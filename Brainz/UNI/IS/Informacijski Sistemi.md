@@ -1,0 +1,1 @@
+Uporabljamo [[dotNET]] framework za ustvarit spletno aplikacijo.

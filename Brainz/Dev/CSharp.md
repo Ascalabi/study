@@ -1,0 +1,1 @@
+**prop** shortcut for get set function 

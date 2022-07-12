@@ -1,0 +1,111 @@
+{
+  "main": {
+    "id": "91b46bb3559f6da9",
+    "type": "split",
+    "children": [
+      {
+        "id": "5b36722c6462158c",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "Dev/SQL.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "c41680c07f8ade76",
+    "type": "split",
+    "children": [
+      {
+        "id": "9bc3978b86c759b6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0c5b6071f76a4545",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "60a7a4d48b1857da",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": ".NET",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 210.0036334991455
+  },
+  "right": {
+    "id": "13d7484d4044a04a",
+    "type": "split",
+    "children": [
+      {
+        "id": "b3b954021abb7862",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fe9162b9320cba3a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Dev/SQL.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "40694f29220a5e58",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "5b36722c6462158c",
+  "lastOpenFiles": [
+    "Dev/SQL.md",
+    "Dev/DynamoDB.md",
+    "Dev/Database.md",
+    "Dev/DMBS.md",
+    "Dev/WebDev/Amplify.md",
+    "Dev/WebDev/Angular.md",
+    "Dev/WebDev/ABI.md",
+    "Dev/WebDev/JavaScript.md",
+    "Dev/Docker.md",
+    "Blockchain/Solidity.md"
+  ]
+}

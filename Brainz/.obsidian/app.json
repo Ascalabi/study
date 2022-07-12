@@ -1,0 +1,15 @@
+{
+  "promptDelete": false,
+  "alwaysUpdateLinks": true,
+  "communityThemeSortOrder": "download",
+  "showLineNumber": false,
+  "legacyEditor": false,
+  "livePreview": true,
+  "spellcheck": false,
+  "newFileLocation": "current",
+  "attachmentFolderPath": "Dev/dump",
+  "showUnsupportedFiles": true,
+  "spellcheckLanguages": [
+    "en-US"
+  ]
+}

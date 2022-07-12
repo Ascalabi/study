@@ -1,0 +1,1 @@
+An application that allows us to *view* transactions that happen on a block-chain.
