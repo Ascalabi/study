@@ -10,6 +10,7 @@ SQL implementations vary between R[[DBMS]], the concepts are the same but the im
  - **Data Manipulation Language (DML)** manipulating data
 
 
+
 ### Primary keys
 `PRIMARY KEY` is a constraint that uniquely identifies each row in a table
 
@@ -24,6 +25,18 @@ A composite key is made by the combination of two or more columns in a table.
 Is used to prevent actions taht would destroy links between tables.
 
 There can be multiple **foreign keys**, and they can link back to the same table
+
+### Atributes
+ - default 'default name'
+ - not null
+ - auto incrememnt
+
+## Data types
+ - nvarchar for unicode
+
+### Converting data types
+ - cast(**attribute** as integer) -> **attribute**::int (cast operator)
+ - select 17 || '76' -> implicit casting (coercion)
 
 
 
@@ -43,8 +56,22 @@ CREATE TABLE student (
 INSERT INTO student VALUES(2, "evan", "CS");
 
 INSERT INTO student(student_id, name) VALUES(2, "evan"));
+
+
+insert into [tableName] ([key], [name]) query;
 ```
 
+
+## Update
+```sql
+update [tableName] set [name] = [name] + 'something';
+
+-- can be used with a join..
+
+update [tableName] set [name] = [tableName1] + something
+from [tableName] join [tableName1]; 
+
+```
 
 
 ## Functions
@@ -54,18 +81,7 @@ SELECT COUNT(super_id) from employee; --Counts non NULL values
 ```
 AVG, SUM
 
-### Wildcards
-A wildcard char is used to substitute one or more chars.
 
-(%) - zero, one or multiple chars
-(\_) - represents one single char
-([]) - represents any single chars in the bracket h[oa]t = hot, hat
-^ - represents any single chars not in the btackets h[\^oa]t
-\- - range a[b-d] = ab, ac, ad
-
-**LIKE**
-(%) - zero, one or multiple chars
-(_) - represents one single char
 
 
 ### Union
@@ -97,19 +113,24 @@ FROM student
 join mentor
 on student.mentorId = mentor.id;
 ```
-![[Pasted image 20220630114153.png]]
+
+![[Pasted image 20220713134930.png]]
 
 
 ## Window function
-`OVER()` is kinda like a subquerie
+`OVER()` is kinda like a subquery
+
+**function** ( [ arguments ] ) OVER ( [ PARTITION BY **expr1** ]    [ ORDER BY **expr2** ] )
+
+`order by` - orders rows within the window. Some window functions use it as an implicit cumulative window clause.
 
 ```SQL
-SELECT e.\*, max(salary) over(partitiion by dept_name) as max_salary
+SELECT e.\*, max(salary) over(partition by dept_name) as max_salary
 from employee e;
 ```
 So this will create an additional collumn where we will display the max salary for every dept_name
 
-`PARTITION` is kinda like group by
+`PARTITION` creates sub groups kinda like a group by
 
 ### ROW_NUMBER
 Just adds a new collumn n of row 
@@ -145,7 +166,7 @@ Dense rank it the same as rank but it will not skip a value when having duplicat
 -- To be added -- 
 
 ### Subqueries
-Actually the same as windows lmao (performance can differ but who cares)
+Similar to window functions (performance can differ)
 ```SQL
 
 --Subqueries
@@ -155,186 +176,199 @@ select EmployeeId, salary, (Select AVG(salary) from Employee) as AllAvgSalary fr
 select EmployeeId, salary, AVG(salary) over () as AllAvgSalary from Employee;
 ```
 
-**Subquery in from**
-
-**Subquery in where**
-Can replace join..
 
 
+## Cohort analysis
+ - a cohort is a group with a shared characteristic
+ - is a subset of behavioural analytics, we brake it into related groups for analysis
+
+## View
+Just a virtual table
+
+create view [viewName] as (subquery)
+drop view [viewName]
 
 
-## Temp tables
+ntile() 
+ -  a ranking function that distributes the rows in an ordered partition into a specified number of groups
+ - NTILE(4) the number of groups so now we are looking at the spread of quartiles 
+ - so basically it puts rows in groups of quartiles 1-4
 
 
+## Strings
+actully varchar
 
-## Code
+left(string, length)
+ - left('ABCDEF', 3) -> 'ABC'
+ 
+charindex(char, string [, start_pos]) -> the index of first occurance of char
+ - can be used with left for example splitting words by searching for the first ' '
+ - left('Name Surname', charindex(' ', 'Name Surname'))
 
-```SQL
---GLave dokumentov za vsako narocilo
-SELECT * from SALES.ORDERS;
---Vrstice za vsako narocilo preko ORDERID
-SELECT * from SALES.ORDERDETAILS;
---Vse stranke
-SELECT * FROM SALES.CUSTOMERS;
---Podjetja katerim se dobavi nek prodajni nalog
-SELECT * from SALES.SHIPPERS;
+char_length
 
---Vsi produkti
-SELECT * from PRODUCTION.PRODUCTS;
---Kategorija produktov
-SELECT * from PRODUCTION.CATEGORIES;
---Vsi dobavitelji produkta
-SELECT * from PRODUCTION.SUPPLIERS;
---Prodajniki v poodjetju EMPID iz order
-SELECT * from HR.EMPLOYEES2;
+upper/lower 
 
+replace(string, pattern, [, replacement]
+ - removes all occurrences of patern
+ - if replacement is ommited then it just removes
 
--- 1. NALOGA
--- a) Izpis bruto prodaje za leto 2015 za vse dobavitelje (production.suppliers > companyname)--
-SELECT distinct s.COMPANYNAME, sum(o.UNITPRICE * o.QTY * (1 - o.DISCOUNT)) over(partition by COMPANYNAME) as gross_sales FROM SALES.ORDERDETAILS o 
-  join PRODUCTION.PRODUCTS p
-  on o.PRODUCTID = p.PRODUCTID
-  join PRODUCTION.SUPPLIERS s
-  on p.SUPPLIERID = s.SUPPLIERID
-  where o.ORDERID IN (SELECT ORDERID FROM SALES.ORDERS where YEAR(ORDERDATE) = 2015);
+CONCAT( **expr1** [ ,  **exprN** ... ] )
+ - || -> alternative syntax
 
+### Wildcards
+A wildcard char is used to substitute one or more chars.
 
+(%) - zero, one or multiple chars
+(\_) - represents one single char
+([]) - represents any single chars in the bracket h[oa]t = hot, hat
+^ - represents any single chars not in the brackets h[\^oa]t
+\- - range a[b-d] = ab, ac, ad
 
--- b) Razširi izpis z dodatnim stolpcem, ki predstavlja spremembo prodaje glede na leto 2014
-select COMPANYNAME, GROSS_SALES, (GROSS_SALES - GROSS_SALES2) as abs_change 
-from (SELECT distinct s.COMPANYNAME, sum(o.UNITPRICE * o.QTY * (1 - o.DISCOUNT)) over(partition by COMPANYNAME) as gross_sales FROM SALES.ORDERDETAILS o 
-  join PRODUCTION.PRODUCTS p
-  on o.PRODUCTID = p.PRODUCTID
-  join PRODUCTION.SUPPLIERS s
-  on p.SUPPLIERID = s.SUPPLIERID
-  where o.ORDERID IN (SELECT ORDERID FROM SALES.ORDERS where YEAR(ORDERDATE) = 2015))
-  join (
-    SELECT distinct s.COMPANYNAME as cn, sum(o.UNITPRICE * o.QTY * (1 - o.DISCOUNT)) over(partition by COMPANYNAME) as gross_sales2 FROM SALES.ORDERDETAILS o 
-    join PRODUCTION.PRODUCTS p
-    on o.PRODUCTID = p.PRODUCTID
-    join PRODUCTION.SUPPLIERS s
-    on p.SUPPLIERID = s.SUPPLIERID
-    where o.ORDERID IN (SELECT ORDERID FROM SALES.ORDERS where YEAR(ORDERDATE) = 2014)) temp1
-  on temp1.cn = COMPANYNAME;
-
-
-    
--- c) omeji izpis s samo tistimi dobavitelji, ki so imeli več kot +10k razlike v prodaji
-select COMPANYNAME, GROSS_SALES, (GROSS_SALES - GROSS_SALES2) as abs_change 
-from (SELECT distinct s.COMPANYNAME, sum(o.UNITPRICE * o.QTY * (1 - o.DISCOUNT)) over(partition by COMPANYNAME) as gross_sales FROM SALES.ORDERDETAILS o 
-  join PRODUCTION.PRODUCTS p
-  on o.PRODUCTID = p.PRODUCTID
-  join PRODUCTION.SUPPLIERS s
-  on p.SUPPLIERID = s.SUPPLIERID
-  where o.ORDERID IN (SELECT ORDERID FROM SALES.ORDERS where YEAR(ORDERDATE) = 2015))
-  join (
-    SELECT distinct s.COMPANYNAME as cn, sum(o.UNITPRICE * o.QTY * (1 - o.DISCOUNT)) over(partition by COMPANYNAME) as gross_sales2 FROM SALES.ORDERDETAILS o 
-    join PRODUCTION.PRODUCTS p
-    on o.PRODUCTID = p.PRODUCTID
-    join PRODUCTION.SUPPLIERS s
-    on p.SUPPLIERID = s.SUPPLIERID
-    where o.ORDERID IN (SELECT ORDERID FROM SALES.ORDERS where YEAR(ORDERDATE) = 2014)) temp1
-  on temp1.cn = COMPANYNAME
-  where abs_change > 10000;
-      
-
--- d) vzami rezultat iz točke a) in dodaj novi koloni - mesec in YTD gross revenue
-SELECT distinct s.COMPANYNAME, sum(o.UNITPRICE * o.QTY * (1 - o.DISCOUNT)) over(partition by COMPANYNAME) as gross_sales FROM SALES.ORDERDETAILS o 
-  join PRODUCTION.PRODUCTS p
-  on o.PRODUCTID = p.PRODUCTID
-  join PRODUCTION.SUPPLIERS s
-  on p.SUPPLIERID = s.SUPPLIERID
-  where o.ORDERID IN (SELECT ORDERID FROM SALES.ORDERS where YEAR(ORDERDATE) = 2015);
-
-
--- 2. NALOGA
-
--- a) izpiši celotno prodajo po letih za top 10 kupcev v letu 2014 za kategorijo "Beverages", ki so opravili vsaj 5 nakupov (production.categories -> categoryname)
-
-
-
-  SELECT DISTINCT companyname, YEAR(orderdate) AS year, sum(unitprice * qty * (1 - discount)) over(partition by custid, YEAR(orderdate)) AS gross_sales, count(DISTINCT orderid) OVER (PARTITION BY custid, YEAR(orderdate)) AS purcheses FROM Sales.Orderdetails ord
-  JOIN Sales.Orders
-  USING (orderid)
-  JOIN Sales.Customers
-  USING (custid)
-  RIGHT JOIN (SELECT DISTINCT custid, SUM(qty) OVER(PARTITION BY custid) AS Beverages FROM sales.orderdetails c
-    JOIN sales.orders o
-    USING (orderid)
-    JOIN production.products p
-    USING (productid)
-    JOIN production.categories cg
-    USING (categoryid)
-    WHERE categoryname = 'Beverages' and YEAR(orderdate) = 2014
-    ORDER BY Beverages DESC LIMIT 10)
-  USING (custida);
+**LIKE**
+(%) - zero, one or multiple chars
+(_) - represents one single char
 
 
 
 
--- b) izpiši kakšen delež predstavlja teh 10 kupcev po letih v celotni prodaji
 
-SELECT  companyname, year, sum(gross_sales) over(PARTITION BY year) from (
-  SELECT companyname, year, gross_sales FROM (
-    SELECT DISTINCT companyname, YEAR(orderdate) AS year, sum(unitprice * qty * (1 - discount)) over(partition by custid, YEAR(orderdate)) AS gross_sales, count(DISTINCT orderid) OVER (PARTITION BY custid, YEAR(orderdate)) AS purcheses FROM Sales.Orderdetails ord
-    JOIN Sales.Orders
-    USING (orderid)
-    JOIN Sales.Customers
-    USING (custid)
-    RIGHT JOIN (SELECT DISTINCT custid, SUM(qty) OVER(PARTITION BY custid) AS Beverages FROM sales.orderdetails c
-      JOIN sales.orders o
-      USING (orderid)
-      JOIN production.products p
-      USING (productid)
-      JOIN production.categories cg
-      USING (categoryid)
-      WHERE categoryname = 'Beverages' and YEAR(orderdate) = 2014
-      ORDER BY Beverages DESC LIMIT 10)
-    USING (custid))
-  WHERE purcheses>4)
-  ;
+## Terminal Commands
+- show databases
+- use [db]
+- desc [tableName]
 
 
+## SELECT
 
--- *glede na to, da imamo 3 leta podatkov, mora imeti rezultat 6 vrstic--     
-
-
--- 3. NALOGA
-
--- a) izpiši za vsakega kupca koliko nakupov je v določenem razredu "trajanja med dvema nakupoma" -
-
-
-SELECT companyname, sum(CASE WHEN diff < 11 THEN 1 ELSE 0 END) as "do_10",
-                    sum(CASE WHEN 10 < diff < 51 THEN 1 ELSE 0 END) as "11-50",
-                    sum(CASE WHEN 50 < diff < 101 THEN 1 ELSE 0 END) as "51-100",
-                    sum(CASE WHEN 100 < diff THEN 1 ELSE 0 END) as "vec"
-FROM (
-  SELECT companyname, DATEDIFF(day, o1.orderdate, o2.orderdate) AS diff
-  FROM (
-    SELECT companyname, custid, orderdate, ROW_NUMBER() OVER(PARTITION BY custid ORDER BY orderdate) as n_order FROM sales.customers
-      JOIN sales.orders
-      USING (custid)
-      ) o1
-  JOIN (
-    SELECT custid, orderdate, ROW_NUMBER() OVER(PARTITION BY custid ORDER BY orderdate) as n_order FROM sales.customers
-      JOIN sales.orders
-      USING (custid)
-      ) o2
-  ON (o1.custid = o2.custid AND o1.n_order+1 = o2.n_order))
-group by companyname;
+[ WITH ... ] (defining CTEs)
+SELECT
+   [ TOP n ]
+   ...
+[ INTO ... ]
+[ FROM ...
+   [ AT | BEFORE ... ]
+   [ CHANGES ... ]
+   [ CONNECT BY ... ]
+   [ JOIN ... ]
+   [ MATCH_RECOGNIZE ... ]
+   [ PIVOT | UNPIVOT ... ]
+   [ VALUES ... ]
+   [ SAMPLE ... ] ]
+[ WHERE ... ]
+[ GROUP BY ...
+   [ HAVING ... ] ]
+[ QUALIFY ... ]
+[ ORDER BY ... ]
+[ LIMIT ... ]
 
 
-
--- torej če je stranka opravila nakup 1.1.2020 in naslednji nakup 20.1.2020 pomeni, da je bilo med nakupoma 20 dni
-
--- štejemo samo tiste, ki so imeli vsaj 2 nakupa
-
--- predefinirani razredi - do 10 dni, med 11 in 50 dni, med 51 in 100 dni, več
-
--- izpis oblike:
-
--- companyname (sales.customers) | do_10 | 11-50 | 51-100| več
-      
-      
-
+#### pivot
+ - rotates a table by turning the unique values from one column and aggregating 
+ - change column names to months in a row and summing something
+ - (empid, month, sales) into a wider table (e.g. empid, jan_sales, feb_sales, mar_sales)
+ 
+ ```sql
+ select * from (
+	 select month(orderdate) as month, count(*) as orders from
+	 sales.orders group by month(orderdate))
+	 pivot(sum(orders) for month in (1, 2, 3));
 ```
+	
+change the column names
+```sql
+select * from (
+    select month(orderdate) as month, count(*) as orders from
+    sales.orders group by month(orderdate))
+    pivot(sum(orders) for month in (1, 2, 3)) as p ('jan', 'feb', 'mar');
+```
+ 
+	
+#### unpivot
+ - rotates a table by transforming columns into rows
+ - not exactly the opposite of unpivot as it doesn't undo the aggregation
+ - (e.g. empid, jan_sales, feb_sales, mar_sales) to (empid, month, sales)
+
+```sql
+select * from sales
+    unpivot(sales for month in (jan, feb, mar, april))
+    order by empid;
+```
+ 
+
+#### WHERE
+- filters the result of the from clause in the select statement
+- used before the group by
+
+
+#### group by rollup
+ - produces sub-total rows in addition to the grouped rows.
+ - sub-total rows are just further aggregated values from grouped rows
+ - kinda similar to partition by
+```sql
+select state, city, sum(price) as profit 
+ from products as p, sales as s
+ where s.product_id = p.product_id
+ group by rollup (state, city)
+ order by state, city nulls last;
+-- but doing like this the last row for each state will have a null city attribute, and the last row will have a null null for total sales
+ 
+```
+ 
+ 
+ 
+ 
+#### having
+ - filters rows produced by `group by`
+ - can contain aggregate functions
+ - used after the group by
+ 
+#### qualify
+ - filters results of window functions
+ - otherwise filtering requires nesting
+
+```sql
+-- nested
+select * 
+from (
+	 select i, p, o, 
+			row_number() over (partition by p order by o) as row_num
+		from qt
+	)
+where row_num = 1
+;
+
+-- with qualify
+select i, p, o
+from qt
+qualify row_number() over (partition by p order by o) = 1
+;
+```
+ 
+ 
+ 
+
+#### order of execution
+1. From and Joins : since these two forms the basis of the query
+2. Where : Filters out the rows
+3. Group By : Grouping values based on the column specified in the Group By clause
+4. Having : Filters out the grouped rows
+5. Select, window
+6. Distinct : Rows with duplicate values in the column marked as Distinct are discarded
+7. Order By : Rows are sorted based on Order By clause
+8. Limit, Offset : Finally the limit or offset is applied
+
+
+## Case
+
+```sql
+SELECT companyname, sum(CASE WHEN diff < 11 THEN 1 ELSE 0 END) as "do_10",
+                    sum(CASE WHEN between 10 and 50 THEN 1 ELSE 0 END) as "11-50",
+                    sum(CASE WHEN between 50 and 100 THEN 1 ELSE 0 END) as "51-100",
+                    sum(CASE WHEN 100 < diff THEN 1 ELSE 0 END) as "vec"
+```
+
+
+### NVL
+- just an alias for ifnull
+- if  **expr1** is NULL, return **expr2** otherwise return **expr1**
